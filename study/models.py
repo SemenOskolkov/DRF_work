@@ -9,6 +9,8 @@ class Course(models.Model):
     preview = models.ImageField(upload_to='course/', **NULLABLE, verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание')
 
+    lessons = models.ManyToManyField('study.Lesson', **NULLABLE, verbose_name='Уроки')
+
     class Meta:
         verbose_name = 'курс'
         verbose_name_plural = 'курсы'

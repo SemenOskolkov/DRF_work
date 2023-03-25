@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'financial_accounting',
     'rest_framework',
     'study',
     'users',

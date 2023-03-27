@@ -10,6 +10,7 @@ class Course(models.Model):
     description = models.TextField(verbose_name='Описание')
 
     lessons = models.ManyToManyField('study.Lesson', **NULLABLE, verbose_name='Уроки')
+    owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, **NULLABLE, verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'курс'
@@ -24,6 +25,8 @@ class Lesson(models.Model):
     preview = models.ImageField(upload_to='course/', **NULLABLE, verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание')
     link_to_video = models.CharField(max_length=250, verbose_name='Ссылка  на видео')
+
+    owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, **NULLABLE, verbose_name='Владелец')
 
     class Meta:
         verbose_name = 'урок'

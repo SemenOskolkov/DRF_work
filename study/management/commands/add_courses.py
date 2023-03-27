@@ -35,10 +35,12 @@ class Command(BaseCommand):
             }
         ]
 
-        course_list = []
         Course.objects.all().delete()
 
         for item in course:
-            course_list.append(Course(**item))
+            course_item = Course.objects.create(name=item['name'], description=item['description'])
 
-        Course.objects.bulk_create(course_list)
+            for lesson_item in item['lessons']:
+                course_item.lessons.add(lesson_item)
+
+            course_item.save()

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'financial_accounting',
     'rest_framework_simplejwt',
     'rest_framework',
+    'subscription',
     'study',
     'users',
 ]

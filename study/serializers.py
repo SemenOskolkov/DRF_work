@@ -18,9 +18,18 @@ class LessonSerializer(serializers.ModelSerializer):
         )
 
 
+class LessonInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Lesson
+        fields = (
+            'name',
+        )
+
+
 class CourseSerializer(serializers.ModelSerializer):
     numbers_lessons = serializers.SerializerMethodField()  # Для модели курса добавьте в сериализатор поле вывода количества уроков.
-    lessons = LessonSerializer(many=True, source='lesson_set')  # Для сериализатора для модели курса реализуйте поле вывода уроков.
+    lessons = LessonInfoSerializer(read_only=True, many=True)  # Для сериализатора для модели курса реализуйте поле вывода уроков.
     subscription = serializers.SerializerMethodField()
 
     class Meta:
@@ -30,6 +39,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'preview',
             'description',
             'numbers_lessons',
+            'lessons',
             'subscription',
         )
 

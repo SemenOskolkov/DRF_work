@@ -7,8 +7,6 @@ from users.models import User
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    student = SlugRelatedField(slug_field="email", queryset=User.objects.all())
-    course = SlugRelatedField(slug_field="name", queryset=Course.objects.all())
 
     class Meta:
         model = Subscription

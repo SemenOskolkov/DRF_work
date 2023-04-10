@@ -12,7 +12,9 @@ class ModeratorPerms(BasePermission):  # permission на модератора
 class SuperUserPerms(BasePermission):  # permission на суперпользователя
 
     def has_permission(self, request, view):
-        return request.user.is_superuser
+        if request.user.is_superuser:
+            return True
+        return False
 
 
 class OwnerPerms(BasePermission):  # permission на владельца

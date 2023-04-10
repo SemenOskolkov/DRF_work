@@ -7,7 +7,7 @@ from subscription.views import SubscriptionListView, SubscriptionCreatAPIView, S
 app_name = SubscriptionConfig.name
 
 urlpatterns = [
-    path('subscription/', SubscriptionListView.as_view(), name='subscription_list'),
-    path('subscription/create/', SubscriptionCreatAPIView.as_view(), name='subscription_create'),
-    path('subscription/delete/<int:pk>/', SubscriptionDestroyAPIView.as_view(), name='subscription_delete'),
+    path('', SubscriptionListView.as_view(), name='subscription_list'),
+    path('create/', SubscriptionCreatAPIView.as_view(), name='subscription_create'),
+    path('delete/<int:pk>/', SubscriptionDestroyAPIView.as_view(), name='subscription_delete'),
 ]

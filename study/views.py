@@ -1,15 +1,22 @@
-from django.shortcuts import render
 from rest_framework import viewsets, generics
 
 from study.models import Course, Lesson
 from study.permissions import SuperUserPerms, ModeratorPerms, OwnerPerms
-from study.serializers import CourseSerializer, LessonSerializer
+from study.serializers.course import CourseSerializer, CourseListSerializer, CourseDetailSerializer
+from study.serializers.lesson import LessonListSerializer, LessonSerializer, LessonDetailSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    default_serializer = CourseSerializer
+    serializers = {
+        'list': CourseListSerializer,
+        'retrieve': CourseDetailSerializer,
+    }
     permission_classes = [SuperUserPerms | ModeratorPerms | OwnerPerms]
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action, self.default_serializer)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -19,7 +26,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 class LessonListView(generics.ListAPIView):
-    serializer_class = LessonSerializer
+    serializer_class = LessonListSerializer
     queryset = Lesson.objects.all()
     permission_classes = [SuperUserPerms | ModeratorPerms | OwnerPerms]
 
@@ -32,11 +39,10 @@ class LessonListView(generics.ListAPIView):
 
 class LessonCreatAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializer
-    permission_classes = [SuperUserPerms | ModeratorPerms | OwnerPerms]
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
-    serializer_class = LessonSerializer
+    serializer_class = LessonDetailSerializer
     queryset = Lesson.objects.all()
     permission_classes = [SuperUserPerms | ModeratorPerms | OwnerPerms]
 

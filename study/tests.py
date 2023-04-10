@@ -7,12 +7,14 @@ from users.models import User
 class LessonTestCase(APITestCase):
 
     def setUp(self) -> None:
+        super().setUp()
         self.user = User(
             email='user10@test.ru',
             first_name='User',
             last_name='Ten',
         )
         self.user.set_password('12ddfs984dsa')
+        self.user.is_superuser = True
         self.user.save()
 
         response = self.client.post(
@@ -52,7 +54,7 @@ class LessonTestCase(APITestCase):
 
     def test_get_lesson(self):  # Просмотр урока
         self.test_lesson_create()
-        response = self.client.get('/study/lesson/12/')
+        response = self.client.get('/study/lesson/1/')
 
         self.assertEqual(
             response.status_code,
@@ -66,12 +68,13 @@ class LessonTestCase(APITestCase):
                 'preview': None,
                 'description': self.test_lesson_description,
                 'link_to_video': self.test_lesson_link_to_video,
+                'owner': None
             }
         )
 
-    def test_lesson_update(self):  #
+    def test_lesson_update(self):  # Изменение урока
         self.test_lesson_create()
-        response = self.client.put('/study/lesson/update/12/',
+        response = self.client.put('/study/lesson/update/3/',
                                    {
                                        'name': self.test_lesson_new_name,
                                        'description': self.test_lesson_new_description,
@@ -87,18 +90,20 @@ class LessonTestCase(APITestCase):
         self.assertEqual(
             response.json(),
             {
+                'id': 3,
                 'name': self.test_lesson_new_name,
                 'preview': None,
                 'description': self.test_lesson_new_description,
                 'link_to_video': self.test_lesson_new_link_to_video,
+                'owner': None
             }
         )
 
-    def test_lesson_delete(self):  #
+    def test_lesson_delete(self):  # Удаление урока
         self.test_lesson_create()
-        response = self.client.delete('/study/lesson/delete/12/')
+        response = self.client.delete('/study/lesson/delete/3/')
 
         self.assertEqual(
             response.status_code,
-            status.HTTP_403_FORBIDDEN
+            status.HTTP_204_NO_CONTENT
         )

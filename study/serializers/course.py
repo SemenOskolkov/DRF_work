@@ -3,8 +3,6 @@ from rest_framework.relations import SlugRelatedField
 
 from study.models import Course
 from study.serializers.lesson import LessonListSerializer
-from subscription.models import Subscription
-from subscription.serializers import SubscriptionSerializer
 from users.models import User
 
 
@@ -38,14 +36,18 @@ class CourseDetailSerializer(serializers.ModelSerializer):
             'description',
             'owner',
             'numbers_lessons',
-            'lessons',
             'subscription',
+            'lessons',
         )
 
     def get_numbers_lessons(self, instance):
         return instance.lessons.count()
 
-    def get_subscription(self, course):
-        user = self.context.get('request').user.id
-        subscription_object = Subscription.objects.filter(user=user).filter(course=course).status
-        return subscription_object
+    def _user(self):
+        request = self.context.get('request', None)
+        if request:
+            return request.user
+        return None
+
+    def get_subscription(self, instance):
+        return instance.subscription_set.filter(user=self._user).exists()

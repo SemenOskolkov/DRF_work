@@ -1,67 +1,56 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from study.models import Course
+from subscription.models import Subscription
 from users.models import User
 
 
 class SubscribeTestCase(APITestCase):
+    email = 'user10@test.ru'
+    password = '12ddfs984dsa'
+    first_name = 'User'
+    last_name = 'Ten'
 
     def setUp(self) -> None:
-        super().setUp()
-        self.user = User(
-            email='user10@test.ru',
-            first_name='User',
-            last_name='Ten',
+
+        self.course = Course.objects.create(
+            name='Test: Курс 1',
+            description='Test: Информация по курсу 1',
         )
-        self.user.set_password('12ddfs984dsa')
+
+        self.user = User.objects.create(
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+        )
+        self.user.set_password(self.password)
         self.user.is_superuser = True
         self.user.save()
 
         response = self.client.post(
             '/users/token/',
             {
-                "email": 'user10@test.ru',
-                "password": "12ddfs984dsa"
+                "email": self.email,
+                "password": self.password
             }
         )
 
         self.access_token = response.json().get('access')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
 
-        '''CREATE Исходные данные'''
-        self.test_course_name = 'Курс 1'
-        self.test_course_description = 'Информация по курсу 1'
-
-    def test_subscribe_create(self):
-        self.client.post('/study/course/',
+    def _send_subscription_request(self):
+        self.client.post('/subscription/',
                          {
-                            "name": self.test_course_name,
-                            "description": self.test_course_description,
-                            "lessons": [],
-                            "owner": []
+                             "course": self.course.pk,
                          }
                          )
 
-        response = self.client.post('/subscribe/create/',
-                                    {
-                                        "course": self.test_course_name,
-                                        "owner": self.user
-                                    }
-                                    )
+    def test_subscription_create(self):
+        queryset = Subscription.objects.filter(user=self.user, course=self.course)
 
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_201_CREATED
-        )
+        self._send_subscription_request()  # Запрос на создание подписки
+        self.assertTrue(queryset.exists())
 
-    def test_subscribe_destroy(self):
-        self.test_subscribe_create()
-        response = self.client.delete('/subscribe/delete/2/',
-                                      {
-                                          "course": self.test_course_name,
-                                          "owner": self.user
-                                      })
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_204_NO_CONTENT)
+        self._send_subscription_request()  # Запрос на удаление подписки
+        self.assertFalse(queryset.exists())

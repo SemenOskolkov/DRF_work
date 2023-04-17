@@ -15,5 +15,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         fields = (
             'user',
             'course',
-            'status',
         )

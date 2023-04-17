@@ -161,3 +161,5 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
 }
+
+TERMINAL_KEY = os.getenv('TERMINAL_KEY')

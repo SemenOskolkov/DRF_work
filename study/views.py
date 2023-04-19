@@ -4,6 +4,7 @@ from study.models import Course, Lesson
 from study.permissions import SuperUserPerms, ModeratorPerms, OwnerPerms
 from study.serializers.course import CourseSerializer, CourseListSerializer, CourseDetailSerializer
 from study.serializers.lesson import LessonListSerializer, LessonSerializer, LessonDetailSerializer
+from study.tasks import send_course_update
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,10 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.request.user.has_perms(['study.change_course', 'study.view_course']):
             return queryset
         return queryset.filter(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        self.object = serializer.save()
+        send_course_update.delay(self.object.pk)
 
 
 class LessonListView(generics.ListAPIView):

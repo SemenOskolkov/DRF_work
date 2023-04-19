@@ -1,5 +1,5 @@
 import requests
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,7 +39,7 @@ class PayCourseAPIView(APIView):
                                             paid_course=course_item, user=user)
 
         data_for_request = {
-            "TerminalKey": settings.TERMINAL_KEY,
+            "TerminalKey": settings.TINKOFF_TERMINAL_KEY,
             "Amount": course_item.price,
             "OrderId": pay_object.pk,
             "DATA": {
@@ -61,10 +61,18 @@ class PayCourseAPIView(APIView):
             }
         }
 
-        request = requests.post('https://securepay.tinkoff.ru/v2/Init/', json=data_for_request)
+        response = requests.post(
+            f'{settings.TINKOFF_URL}Init', json=data_for_request
+        )
 
-        if request.json()["Success"] == True:
-            pay_object.link_pay = request.json()["PaymentURL"]
-            pay_object.save()
+        if response.status_code == status.HTTP_200_OK:
+            response_json = response.json()
 
-        return Response({"link_pay": request.json()["PaymentURL"], "data": request.json()})
+            if response_json.get("Success"):
+                pay_object.tinkoff_payment_id = response_json.get("PaymentId")
+                pay_object.link_pay = response_json.get("PaymentURL")
+                pay_object.save()
+
+            return Response({"link_pay": pay_object.link_pay})
+
+        return None

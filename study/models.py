@@ -9,7 +9,7 @@ class Course(models.Model):
     preview = models.ImageField(upload_to='course/', **NULLABLE, verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание')
     price = models.FloatField(default=1000, verbose_name='Стоимость курса')
-    link_pay = models.URLField(**NULLABLE, verbose_name='Ссылка на оплату')
+    datetime_update = models.DateTimeField(auto_now=True, **NULLABLE, verbose_name='Время обновления')
 
     lessons = models.ManyToManyField('study.Lesson', **NULLABLE, verbose_name='Уроки')
     owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, **NULLABLE, verbose_name='Владелец')
@@ -27,6 +27,7 @@ class Lesson(models.Model):
     preview = models.ImageField(upload_to='course/', **NULLABLE, verbose_name='Изображение')
     description = models.TextField(verbose_name='Описание')
     link_to_video = models.CharField(max_length=250, verbose_name='Ссылка  на видео')
+    datetime_update = models.DateTimeField(auto_now=True, **NULLABLE, verbose_name='Время обновления')
 
     owner = models.ForeignKey('users.User', on_delete=models.SET_NULL, **NULLABLE, verbose_name='Владелец')
 

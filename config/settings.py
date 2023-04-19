@@ -44,10 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
-
-    'financial_accounting',
     'rest_framework_simplejwt',
     'rest_framework',
+    'django_celery_beat',
+
+    'financial_accounting',
     'subscription',
     'study',
     'users',
@@ -149,6 +150,12 @@ LOGIN_URL = '/users/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -158,8 +165,14 @@ REST_FRAMEWORK = {
     ]
 }
 
+BASE_URL = os.getenv('BASE_URL')
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1)
 }
 
-TERMINAL_KEY = os.getenv('TERMINAL_KEY')
+TINKOFF_TERMINAL_KEY = os.getenv('TINKOFF_TERMINAL_KEY')
+TINKOFF_TERMINAL_PASSWORD = os.getenv('TINKOFF_TERMINAL_PASSWORD')
+TINKOFF_URL = os.getenv('TINKOFF_URL')

@@ -1,0 +1,25 @@
+stages:
+    - deploy
+    - tests
+
+Deploy to prod:
+    stage: deploy
+    script:
+        - cp $ENV_PROD .env
+        - bash deployment_script.sh
+
+    only:
+        -  home_work_91day
+    tags:
+        - prod
+
+Tests to prod:
+    stage: tests
+    script:
+        - cp $ENV_PROD .env
+        - bash tests_script.sh
+
+    only:
+        -  home_work_91day
+    tags:
+        - prod
